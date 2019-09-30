@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block header %}
+
+
+   <section class="login-page">
+  <h2>Edytuj profil</h2>
+      {% if message %}
+      {{message}}
+      {% endif %}
+      <form method="POST" action="">
+        {% csrf_token %}
+        <div class="form-group">Imię:
+          <input type="text" name="name" value="{{user.first_name}}"/>
+        </div>
+         <div class="form-group">Nazwisko:
+          <input type="text" name="surname" value="{{user.last_name}}" />
+        </div>
+        <div class="form-group">E-mail:
+          <input type="email" name="email" value="{{user.email}}" />
+        </div>
+          <div class="form-group">Hasło:
+          <input type="password" name="form_password" placeholder="Hasło" />
+        </div>
+        <div class="form-group form-group--buttons" name="edit_profile">
+          <button class="btn" type="submit" name="edit_profile">Zapisz zmiany</button>
+        </div>
+      </form>
+    </section>
+{% endblock %}
+{% block content %}
+    <section class="login-page">
+      <h2>Zmiana hasła</h2>
+           <form class="slidedown" method="POST" action="">
+        {% csrf_token %}
+        <div class="form-group">Stare hasło:
+          <input type="password" name="old_password" placeholder="Stare hasło" />
+        </div>
+        <div class="form-group">Nowe hasło:
+          <input type="password" name="password" placeholder="Nowe hasło" />
+        </div>
+          <div class="form-group">Powtórz nowe hasło:
+          <input type="password" name="password2" placeholder="Powtórz hasło" />
+        </div>
+               <div class="form-group form-group--buttons">
+          <button class="btn" type="submit" name="change_password">Zapisz zmiany</button>
+        </div>
+           </form>
+    </section>
+{% endblock %}

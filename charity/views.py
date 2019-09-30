@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.db.models.functions import datetime
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -70,5 +72,76 @@ class Register (View):
             else:
                 message="Podano niepoprawne dane"
                 return render (request, "register.html", context={"message":message})
+
+class ProfileView(View):
+    def get(self, request):
+        return render(request, "profile.html")
+
+
+
+class EditProfileView(View):
+    def get(self, request):
+        return render(request, "edit_profile.html")
+    def post(self, request):
+        user_id = request.user
+        user = User.objects.get(id = user_id.id)
+        name = request.POST.get("name")
+        surname = request.POST.get("surname")
+        email = request.POST.get("email")
+        form_password = request.POST.get("form_password")
+        if user.check_password(form_password) == True:
+            user.username =email
+            user.first_name = name
+            user.last_name = surname
+            user.email= email
+            user.save()
+            message = "Zmiany w profilu zostały zapisane"
+            return render (request, "edit_profile.html", context={"message": message})
+
+        old_password = request.POST.get("old_password")
+
+        if user.check_password(old_password) == True:
+            new_password = request.POST.get("password")
+            new_check = request.POST.get("password2")
+            if new_check == new_password:
+                user.set_password(new_password)
+                user.save()
+                message = "Hasło zostało poprawnie zmienione"
+            else:
+                message = "Niepoprawne hasło"
+        else:
+            message = "Niepoprawne hasło"
+
+        return render(request, "edit_profile.html", context={"message":message})
+
+class DonationProfileView(View):
+    def get(self, request):
+        user = request.user
+        donation_list = Donation.objects.all().filter(user_id = user).order_by('is_taken')
+        return render(request, "profile_donation.html", context={"donation_list":donation_list})
+    def post(self, request):
+        user = request.user
+        donation_list = Donation.objects.all().filter(user_id = user).order_by('is_taken')
+        is_taken = request.POST.get("is_taken")
+        taken = request.POST.get("taken")
+
+        if is_taken:
+            change=Donation.objects.get(id=is_taken)
+            change.is_taken = True
+            date=datetime.datetime.today().date()
+            time = datetime.datetime.today().time()
+            change.pick_up_date = date
+            change.pick_up_time = time
+            change.save()
+
+        if taken:
+            change = Donation.objects.get(id=taken)
+            change.is_taken = False
+            change.pick_up_date = None
+            change.pick_up_time = None
+            change.save ()
+
+
+        return render(request, "profile_donation.html", context={"donation_list":donation_list})
 
 

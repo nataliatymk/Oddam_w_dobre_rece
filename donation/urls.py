@@ -14,19 +14,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 # from django.views.i18n import JavaScriptCatalog
 
-from charity.views import LandingPage, AddDonation, Login, Register, LogoutView
+from charity.views import (LandingPage, AddDonation, Login, Register, LogoutView, ProfileView, EditProfileView, DonationProfileView)
 
 urlpatterns = [
     # path ('jsi18n/', JavaScriptCatalog.as_view (), name='javascript-catalog'),
     path('admin/', admin.site.urls),
-
     path('', LandingPage.as_view(), name="landing"),
     path('add_donation/', AddDonation.as_view(), name="add_donation"),
     path('login/', Login.as_view(), name="login"),
     path('register/', Register.as_view(), name="register"),
     path('logout/', LogoutView.as_view(), name="logout"),
+    path('profile/', ProfileView.as_view(), name="profile"),
+    path('profile/edit', EditProfileView.as_view(), name="edit_profile"),
+    path('profile/donation', DonationProfileView.as_view(), name="profile_donation"),
+
 
 ]

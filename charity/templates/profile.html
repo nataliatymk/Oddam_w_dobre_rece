@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block header %}
+
+
+  <h2>Profil użytkownika {{user.first_name}}</h2>
+
+<div class="about-us--text">
+    <p>Imię: {{user.first_name}}</p>
+    <p>Nazwisko: {{user.last_name}}</p>
+    <p>E-mail: {{user.email}}</p>
+    <p><a href="{% url 'profile_donation' %}">Lista moich darów</a></p>
+
+    </div>
+ {% endblock %}

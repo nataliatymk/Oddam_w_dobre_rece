@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{%block header %}
+<div class="about-us--text">
+    <h2>Przekazane dary przez {{user.first_name}}:</h2>
+    <ul class="list">
+
+    {% for donation in donation_list %}
+    <li>Wybrana organizacja: {{donation.institution}}
+        <ul>
+            <li>Liczba worków: {{donation.quantity}}</li>
+            <li>Kategorie darów:
+                {% for cat in donation.categories.all %}
+            {{cat}},
+                {% endfor %}</li>
+
+
+            <li>Data odebrania: {% if donation.pick_up_date is None %} Brak {% else %}
+                {{donation.pick_up_date}} {{donation.pick_up_time}}
+            {% endif %}</li>
+
+                <form method="post">
+                    {% csrf_token %}
+                {% if donation.is_taken is True %}
+                    <li style="color: darkgreen">Status daru: Odebrano
+                        <button class="btn--highlighted" name="taken" value="{{donation.id}}">Zmień</button> </li>
+                {% else %}
+                <li style="color: darkred">Status daru: Nie odebrano
+
+                    <button class="btn--highlighted" name="is_taken" value="{{donation.id}}">Zmień</button></li>
+{% endif %}
+
+            </li>
+</form>
+        </ul>
+    </li>
+    {% endfor %}
+
+</ul>
+</div>
+
+
+{% endblock %}
