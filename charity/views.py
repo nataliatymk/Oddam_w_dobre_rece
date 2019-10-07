@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.db.models import Sum
 from django.db.models.functions import datetime
 from django.shortcuts import render, redirect
@@ -15,19 +15,53 @@ class LandingPage(View):
         quantity = list(Donation.objects.aggregate(Sum('quantity')).values())[0]
         institutions = Institution.objects.count()
         # institutions = list(Donation.objects.aggregate(Count('institution')).values())[0]
-        foundations = Institution.objects.filter(type=0)
+        fundations = Institution.objects.filter(type=0)
         organisations = Institution.objects.filter(type=1)
         locals = Institution.objects.filter(type=2)
 
-        return render (request, "index.html", context={"quantity":quantity, "institutions":institutions, "foundations":foundations,
-                                                       "organisations":organisations, "locals":locals})
+        def num_of_page (items):
+            paginator = Paginator (items, 5)
+            page = request.GET.get ('page')
+
+            if page is None:
+                return paginator.get_page (1)
+
+            return paginator.get_page (page[:-1])
+
+        return render (request, "index.html", context={"quantity":quantity, "institutions":institutions,
+                                                       "fundations": num_of_page(fundations), "organisations": num_of_page(organisations),
+                                                       "locals": num_of_page(locals)})
 
 
 class AddDonation (View):
     def get (self, request):
         category =Category.objects.all()
-        return render (request, "form.html", context={"category":category})
+        fundation =  Institution.objects.all()
+        return render (request, "form.html", context={"category":category, "fundation":fundation})
+    def post(self, request):
+        new_donation = Donation()
+        new_donation.quantity = request.POST.get("bags")
+        new_donation.institution = Institution.objects.get(id=request.POST.get("organization"))
+        new_donation.adress = request.POST.get("address")
+        new_donation.city = request.POST.get("city")
+        new_donation.zip_code = request.POST.get("postcode")
+        new_donation.phone_number = request.POST.get("phone")
+        new_donation.pick_up_date = request.POST.get("data")
+        new_donation.pick_up_time = request.POST.get("time")
+        new_donation.pick_up_comment = request.POST.get("more_info")
+        new_donation.user = request.user
+        new_donation.save()
 
+        categories = request.POST.getlist ('categories')
+
+        for category in categories:
+            new_donation.categories.add (int (category))
+
+        return render(request, "form-confirmation.html")
+
+class DonationConfirm(View):
+    def get(self, request):
+        return render (request, "form-confirmation.html")
 
 class Login (View):
     def get (self, request):

@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
      * TODO: callback to page change event
      */
     changePage(e) {
-      e.preventDefault();
+      //e.preventDefault();
       const page = e.target.dataset.page;
 
       console.log(page);
@@ -243,13 +243,83 @@ document.addEventListener("DOMContentLoaded", function() {
      * TODO: validation, send data to server
      */
     submit(e) {
-      e.preventDefault();
-      this.currentStep++;
-      this.updateForm();
+      //e.preventDefault();
+        this.currentStep++;
+        this.updateForm();
     }
   }
   const form = document.querySelector(".form--steps");
   if (form !== null) {
     new FormSteps(form);
   }
+
+
+  let filterBtn = document.getElementById("btn-first-step");
+  let institutions = document.getElementsByClassName("institutions");
+
+  filterBtn.addEventListener( "click", function() {
+    let listCategories = [];
+
+    let checkedCategories = document.getElementsByClassName("categories");
+    for(let i=0; i<checkedCategories.length; i++){
+      if(checkedCategories[i].checked){
+         listCategories.push(checkedCategories[i].value)
+      }
+    }
+
+    function checkArrays(array1, array2) {
+
+      for(let i=0; i<array1.length; i++){
+        if(array2.includes(array1[i])){
+
+        }else{
+          return false;
+        }
+      }
+      return true;
+      }
+
+    for(let i=0; i<institutions.length; i++){
+      let a = institutions[i].dataset.category_id.split(" ")
+      a.pop();
+
+      if(checkArrays(listCategories, a)){
+        institutions[i].parentElement.parentElement.style.display = "block";
+      }else{
+        institutions[i].parentElement.parentElement.style.display = "none";
+      }
+    }
+  });
+
+  let btnInfo = $("#btn-info");
+
+  btnInfo.on("click", function(){
+      let bags = $("#bags").val();
+      $("#bags-info").text(bags);
+
+      let institutionName = $("form .form-group--checkbox input:checked + .checkbox").next().children(":first").text();
+      $("#institution-info").text(institutionName)
+
+      let address = $("#address").val();
+      $("#address-info").text(address);
+
+      let city = $("#city").val();
+      $("#city-info").text(city);
+
+      let postcode = $("#postcode").val();
+      $("#postcode-info").text(postcode);
+
+      let phone = $("#phone").val();
+      $("#phone-info").text(phone);
+
+      let date = $("#date").val();
+      $("#date-info").text(date);
+
+      let time = $("#time").val();
+      $("#time-info").text(time);
+
+      let more_info = $("#more-info").val();
+      $("#more").text(more_info);
+  })
+
 });

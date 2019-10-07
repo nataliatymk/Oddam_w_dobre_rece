@@ -54,21 +54,23 @@
       <div class="form--steps-container">
         <div class="form--steps-counter">Krok <span>1</span>/5</div>
 
-        <form action="form-confirmation.html" method="post">
+        <form method="post">
+          {% csrf_token %}
           <!-- STEP 1: class .active is switching steps -->
           <div data-step="1" class="active">
             <h3>Zaznacz co chcesz oddać:</h3>
-{% for cat in category %}
+            {% for cat in category %}
             <div class="form-group form-group--checkbox">
 
               <label>
                 <input
                   type="checkbox"
                   name="categories"
+                  class="categories"
                   value="{{cat.id}}"
                 />
                 <span class="checkbox"></span>
-                <span class="description"
+                <span class="description" id="{{cat.name}}"
                   >{{cat.name}}</span
                 >
               </label>
@@ -78,7 +80,7 @@
 
 
             <div class="form-group form-group--buttons">
-              <button type="button" class="btn next-step">Dalej</button>
+              <button type="button" class="btn next-step" id="btn-first-step">Dalej</button>
             </div>
           </div>
 
@@ -89,7 +91,7 @@
             <div class="form-group form-group--inline">
               <label>
                 Liczba 60l worków:
-                <input type="number" name="bags" step="1" min="1" />
+                <input type="number" name="bags" id="bags" step="1" min="1" />
               </label>
             </div>
 
@@ -101,35 +103,33 @@
 
 
 
-          <!-- STEP 4 -->
-          <div data-step="3">
+          <!-- STEP 3 -->
+          <div data-step="3" id="institution-check">
             <h3>Wybierz organizacje, której chcesz pomóc:</h3>
-
+              {% for institution in fundation %}
             <div class="form-group form-group--checkbox">
-              {% for a in cat_array %}
               <label>
-                <input type="radio" name="organization" value="old" />
+                <input type="radio" name="organization" value="{{institution.id}}" class="institutions"
+                data-category_id="{% for category in institution.categories.all %}{{ category.id }} {% endfor %}"/>
                 <span class="checkbox radio"></span>
                 <span class="description">
-                  <div class="title">{{a}} asd</div>
+                  <div class="title">{{institution}}</div>
                   <div class="subtitle">
-                    Cel i misja: Pomoc dla osób nie posiadających miejsca
-                    zamieszkania
+                     Instytucja przyjmuje: {% for category in institution.categories.all %}{{ category.name }} {% endfor %}
                   </div>
 
                 </span>
               </label>
-               {% endfor %}
             </div>
-
+               {% endfor %}
 
             <div class="form-group form-group--buttons">
-              <button type="button" class="btn prev-step">Wstecz</button>
+              <button type="button" class="btn prev-step" id="filter-reset">Wstecz</button>
               <button type="button" class="btn next-step">Dalej</button>
             </div>
           </div>
 
-          <!-- STEP 5 -->
+          <!-- STEP 4 -->
           <div data-step="4">
             <h3>Podaj adres oraz termin odbioru rzecz przez kuriera:</h3>
 
@@ -137,22 +137,22 @@
               <div class="form-section--column">
                 <h4>Adres odbioru</h4>
                 <div class="form-group form-group--inline">
-                  <label> Ulica <input type="text" name="address" /> </label>
+                  <label> Ulica <input type="text" name="address" id="address"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
-                  <label> Miasto <input type="text" name="city" /> </label>
+                  <label> Miasto <input type="text" name="city" id="city"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
                   <label>
-                    Kod pocztowy <input type="text" name="postcode" />
+                    Kod pocztowy <input type="text" name="postcode" id="postcode"/>
                   </label>
                 </div>
 
                 <div class="form-group form-group--inline">
                   <label>
-                    Numer telefonu <input type="phone" name="phone" />
+                    Numer telefonu <input type="phone" name="phone" id="phone"/>
                   </label>
                 </div>
               </div>
@@ -160,28 +160,28 @@
               <div class="form-section--column">
                 <h4>Termin odbioru</h4>
                 <div class="form-group form-group--inline">
-                  <label> Data <input type="date" name="data" /> </label>
+                  <label> Data <input type="date" name="data" id="date"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
-                  <label> Godzina <input type="time" name="time" /> </label>
+                  <label> Godzina <input type="time" name="time" id="time"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
                   <label>
                     Uwagi dla kuriera
-                    <textarea name="more_info" rows="5"></textarea>
+                    <textarea name="more_info" rows="5" id="more-info"></textarea>
                   </label>
                 </div>
               </div>
             </div>
             <div class="form-group form-group--buttons">
               <button type="button" class="btn prev-step">Wstecz</button>
-              <button type="button" class="btn next-step">Dalej</button>
+              <button type="button" class="btn next-step" id="btn-info" >Dalej</button>
             </div>
           </div>
 
-          <!-- STEP 6 -->
+          <!-- STEP 5 -->
           <div data-step="5">
             <h3>Podsumowanie Twojej darowizny</h3>
 
@@ -191,16 +191,14 @@
                 <ul>
                   <li>
                     <span class="icon icon-bag"></span>
-                    <span class="summary--text"
-                      >4 worki ubrań w dobrym stanie dla dzieci</span
-                    >
+                    Liczba worków:
+                    <span class="summary--text" id="bags-info"></span>
                   </li>
 
                   <li>
                     <span class="icon icon-hand"></span>
-                    <span class="summary--text"
-                      >Dla fundacji "Mam marzenie" w Warszawie</span
-                    >
+                    Nazwa fundacji:
+                    <span class="summary--text" id="institution-info"></span>
                   </li>
                 </ul>
               </div>
@@ -209,19 +207,27 @@
                 <div class="form-section--column">
                   <h4>Adres odbioru:</h4>
                   <ul>
-                    <li>Prosta 51</li>
-                    <li>Warszawa</li>
-                    <li>99-098</li>
-                    <li>123 456 789</li>
+                    Ulica:
+                    <li id="address-info"></li>
+                    Miasto:
+                    <li id="city-info"></li>
+                    Kod pocztowy:
+                    <li id="postcode-info"></li>
+                    Numer telefonu:
+                    <li id="phone-info"></li>
+
                   </ul>
                 </div>
 
                 <div class="form-section--column">
                   <h4>Termin odbioru:</h4>
                   <ul>
-                    <li>13/12/2018</li>
-                    <li>15:40</li>
-                    <li>Brak uwag</li>
+                    Data:
+                    <li id="date-info"></li>
+                    Godzina:
+                    <li id="time-info"></li>
+                    Dodatkowe uwagi:
+                    <li id="more"></li>
                   </ul>
                 </div>
               </div>
@@ -235,6 +241,7 @@
         </form>
       </div>
     </section>
+
 
 
 {% endblock %}

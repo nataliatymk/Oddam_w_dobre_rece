@@ -84,26 +84,31 @@
         <p>W naszej bazie znajdziesz listę zweryfikowanych Fundacji, z którymi współpracujemy. Możesz sprawdzić czym się zajmują, komu pomagają i czego potrzebują.</p>
 
         <ul class="help--slides-items">
-          {% for foundation in foundations %}
+          {% for fundation in fundations %}
           <li>
             <div class="col">
-              <div class="title">{{foundation.name}}</div>
-              <div class="subtitle">{{foundation.description}}</div>
+              <div class="title">{{fundation.name}}</div>
+              <div class="subtitle">{{fundation.description}}</div>
             </div>
 
-            <div class="col"><div class="text">{%for cat in foundation.categories.all %}
-              {{cat }}
+            <div class="col"><div class="text">{%for cat in fundation.categories.all %}
+              {{cat}}
             {% endfor %}</div></div>
           </li>
            {% endfor %}
         </ul>
-        <!-- Pagination
+
         <ul class="help--slides-pagination">
-          <li><a href="#" class="btn btn--small btn--without-border active" data-page="1">1</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="2">2</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="3">3</a></li>
+          {% for page in fundations.paginator.page_range %}
+              {% ifequal page fundations.number %}
+                <li><a href="?page={{ page }}/#help" class="btn btn--small btn--without-border active" data-page="{{ page }}">{{ page }}</a></li>
+              {% else %}
+                <li><a href="?page={{ page }}/#help" class="btn btn--small btn--without-border" data-page="{{ page }}">{{ page }}</a></li>
+              {% endifequal %}
+          {% endfor %}
         </ul>
-        -->
+
+
       </div>
 
 
@@ -128,15 +133,15 @@
 
         </ul>
 
-        <!-- Pagination
-        <ul class="help--slides-pagination">
-          <li><a href="#" class="btn btn--small btn--without-border active" data-page="1">1</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="2">2</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="3">3</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="4">4</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="5">5</a></li>
+           <ul class="help--slides-pagination">
+          {% for page in organisations.paginator.page_range %}
+              {% ifequal page organisations.number %}
+                <li><a href="?page={{ page }}/#help" class="btn btn--small btn--without-border active" data-page="{{ page }}">{{ page }}</a></li>
+              {% else %}
+                <li><a href="?page={{ page }}/#help" class="btn btn--small btn--without-border" data-page="{{ page }}">{{ page }}</a></li>
+              {% endifequal %}
+          {% endfor %}
         </ul>
-        -->
       </div>
 
       <!-- SLIDE 3 -->
@@ -160,12 +165,15 @@
           {% endfor %}
         </ul>
 
-        <!-- Pagination
-        <ul class="help--slides-pagination">
-          <li><a href="#" class="btn btn--small btn--without-border active" data-page="1">1</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="2">2</a></li>
+           <ul class="help--slides-pagination">
+          {% for page in local.paginator.page_range %}
+              {% ifequal page local.number %}
+                <li><a href="?page={{ page }}/#help" class="btn btn--small btn--without-border active" data-page="{{ page }}">{{ page }}</a></li>
+              {% else %}
+                <li><a href="?page={{ page }}/#help" class="btn btn--small btn--without-border" data-page="{{ page }}">{{ page }}</a></li>
+              {% endifequal %}
+          {% endfor %}
         </ul>
-        -->
       </div>
     </section>
 
