@@ -1,3 +1,4 @@
+import re
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
@@ -59,9 +60,6 @@ class AddDonation (View):
 
         return render(request, "form-confirmation.html")
 
-class DonationConfirm(View):
-    def get(self, request):
-        return render (request, "form-confirmation.html")
 
 class Login (View):
     def get (self, request):
@@ -100,12 +98,22 @@ class Register (View):
             email = request.POST.get("email")
             password = request.POST.get("password")
             password2 = request.POST.get("password2")
-            if password == password2:
+
+        else:
+            message = "Wypełnij wszystkie pola"
+            return render (request, "login.html", context={"message": message})
+
+        if password == password2:
+            if re.findall ('[()[\]{}|\\`~!@#$%^&*_\-+=;:\'",<>./?]', password) and re.findall('[a-z]', password) and re.findall('[A-Z]', password) and len(password) > 8:
                 User.objects.create_user(username=email,email=email,password=password, first_name=name, last_name=surname)
                 return render (request, "login.html")
             else:
-                message="Podano niepoprawne dane"
+                message="Hasło nie może mieć mniej niż 8 znaków i musi zawierać przynajmniej 1 znak specjalny, 1 dużą literę, 1 małą literę"
                 return render (request, "register.html", context={"message":message})
+        else:
+            message="Hasła muszą być takie same"
+            return render (request, "register.html", context={"message": message})
+
 
 class ProfileView(View):
     def get(self, request):

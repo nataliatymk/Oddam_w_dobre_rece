@@ -17,14 +17,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.i18n import JavaScriptCatalog
 
-from charity.views import (LandingPage, AddDonation, DonationConfirm, Login, Register, LogoutView, ProfileView, EditProfileView, DonationProfileView)
+from charity.views import (LandingPage, AddDonation, Login, Register, LogoutView, ProfileView, EditProfileView, DonationProfileView, )
 
 urlpatterns = [
     path ('jsi18n/', JavaScriptCatalog.as_view (), name='javascript-catalog'),
     path('admin/', admin.site.urls),
     path('', LandingPage.as_view(), name="landing"),
     path('add_donation/', AddDonation.as_view(), name="add_donation"),
-    path('add_donation/confirm', DonationConfirm.as_view(), name="form_confirmation"),
     path('login/', Login.as_view(), name="login"),
     path('register/', Register.as_view(), name="register"),
     path('logout/', LogoutView.as_view(), name="logout"),
