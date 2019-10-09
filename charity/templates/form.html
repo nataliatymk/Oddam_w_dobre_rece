@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block header %}
+      <div class="slogan container container--90">
+        <div class="slogan--item">
+          <h1>
+            Oddaj rzeczy, których już nie chcesz<br />
+            <span class="uppercase">potrzebującym</span>
+          </h1>
+
+          <div class="slogan--steps">
+            <div class="slogan--steps-title">Wystarczą 4 proste kroki:</div>
+            <ul class="slogan--steps-boxes">
+              <li>
+                <div><em>1</em><span>Wybierz rzeczy</span></div>
+              </li>
+              <li>
+                <div><em>2</em><span>Spakuj je w worki</span></div>
+              </li>
+              <li>
+                <div><em>3</em><span>Wybierz fundację</span></div>
+              </li>
+              <li>
+                <div><em>4</em><span>Zamów kuriera</span></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+{% endblock %}
+
+{% block content %}
+
+    <section class="form--steps">
+      <div class="form--steps-instructions">
+        <div class="form--steps-container">
+          <h3>Ważne!</h3>
+          <p data-step="1" class="active">
+            Uzupełnij szczegóły dotyczące Twoich rzeczy. Dzięki temu będziemy
+            wiedzieć komu najlepiej je przekazać.
+          </p>
+          <p data-step="2">
+            Uzupełnij szczegóły dotyczące Twoich rzeczy. Dzięki temu będziemy
+            wiedzieć komu najlepiej je przekazać.
+          </p>
+          <p data-step="3">
+           Wybierz jedną, do
+            której trafi Twoja przesyłka.
+          </p>
+          <p data-step="4">Podaj adres oraz termin odbioru rzeczy.</p>
+        </div>
+      </div>
+
+      <div class="form--steps-container">
+        <div class="form--steps-counter">Krok <span>1</span>/5</div>
+
+        <form method="post">
+          {% csrf_token %}
+          <!-- STEP 1: class .active is switching steps -->
+          <div data-step="1" class="active">
+            <h3>Zaznacz co chcesz oddać:</h3>
+            {% for cat in category %}
+            <div class="form-group form-group--checkbox">
+
+              <label>
+                <input
+                  type="checkbox"
+                  name="categories"
+                  class="categories"
+                  value="{{cat.id}}"
+                />
+                <span class="checkbox"></span>
+                <span class="description" id="{{cat.name}}"
+                  >{{cat.name}}</span
+                >
+              </label>
+
+            </div>
+             {% endfor %}
+
+
+            <div class="form-group form-group--buttons">
+              <button type="button" class="btn next-step" id="btn-first-step">Dalej</button>
+            </div>
+          </div>
+
+          <!-- STEP 2 -->
+          <div data-step="2">
+            <h3>Podaj liczbę 60l worków, w które spakowałeś/aś rzeczy:</h3>
+
+            <div class="form-group form-group--inline">
+              <label>
+                Liczba 60l worków:
+                <input type="number" name="bags" id="bags" step="1" min="1" />
+              </label>
+            </div>
+
+            <div class="form-group form-group--buttons">
+              <button type="button" class="btn prev-step">Wstecz</button>
+              <button type="button" class="btn next-step">Dalej</button>
+            </div>
+          </div>
+
+
+
+          <!-- STEP 3 -->
+          <div data-step="3" id="institution-check">
+            <h3>Wybierz organizacje, której chcesz pomóc:</h3>
+              {% for institution in fundation %}
+            <div class="form-group form-group--checkbox">
+              <label>
+                <input type="radio" name="organization" value="{{institution.id}}" class="institutions"
+                data-category_id="{% for category in institution.categories.all %}{{ category.id }} {% endfor %}"/>
+                <span class="checkbox radio"></span>
+                <span class="description">
+                  <div class="title">{{institution}}</div>
+                  <div class="subtitle">
+                     Instytucja przyjmuje: {% for category in institution.categories.all %}{{ category.name }} {% endfor %}
+                  </div>
+
+                </span>
+              </label>
+            </div>
+               {% endfor %}
+
+            <div class="form-group form-group--buttons">
+              <button type="button" class="btn prev-step" id="filter-reset">Wstecz</button>
+              <button type="button" class="btn next-step">Dalej</button>
+            </div>
+          </div>
+
+          <!-- STEP 4 -->
+          <div data-step="4">
+            <h3>Podaj adres oraz termin odbioru rzecz przez kuriera:</h3>
+
+            <div class="form-section form-section--columns">
+              <div class="form-section--column">
+                <h4>Adres odbioru</h4>
+                <div class="form-group form-group--inline">
+                  <label> Ulica <input type="text" name="address" id="address"/> </label>
+                </div>
+
+                <div class="form-group form-group--inline">
+                  <label> Miasto <input type="text" name="city" id="city"/> </label>
+                </div>
+
+                <div class="form-group form-group--inline">
+                  <label>
+                    Kod pocztowy <input type="text" name="postcode" id="postcode"/>
+                  </label>
+                </div>
+
+                <div class="form-group form-group--inline">
+                  <label>
+                    Numer telefonu <input type="phone" name="phone" id="phone"/>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-section--column">
+                <h4>Termin odbioru</h4>
+                <div class="form-group form-group--inline">
+                  <label> Data <input type="date" name="data" id="date"/> </label>
+                </div>
+
+                <div class="form-group form-group--inline">
+                  <label> Godzina <input type="time" name="time" id="time"/> </label>
+                </div>
+
+                <div class="form-group form-group--inline">
+                  <label>
+                    Uwagi dla kuriera
+                    <textarea name="more_info" rows="5" id="more-info"></textarea>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group form-group--buttons">
+              <button type="button" class="btn prev-step">Wstecz</button>
+              <button type="button" class="btn next-step" id="btn-info" >Dalej</button>
+            </div>
+          </div>
+
+          <!-- STEP 5 -->
+          <div data-step="5">
+            <h3>Podsumowanie Twojej darowizny</h3>
+
+            <div class="summary">
+              <div class="form-section">
+                <h4>Oddajesz:</h4>
+                <ul>
+                  <li>
+                    <span class="icon icon-bag"></span>
+                    Liczba worków:
+                    <span class="summary--text" id="bags-info"></span>
+                  </li>
+
+                  <li>
+                    <span class="icon icon-hand"></span>
+                    Nazwa fundacji:
+                    <span class="summary--text" id="institution-info"></span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="form-section form-section--columns">
+                <div class="form-section--column">
+                  <h4>Adres odbioru:</h4>
+                  <ul>
+                    Ulica:
+                    <li id="address-info"></li>
+                    Miasto:
+                    <li id="city-info"></li>
+                    Kod pocztowy:
+                    <li id="postcode-info"></li>
+                    Numer telefonu:
+                    <li id="phone-info"></li>
+
+                  </ul>
+                </div>
+
+                <div class="form-section--column">
+                  <h4>Termin odbioru:</h4>
+                  <ul>
+                    Data:
+                    <li id="date-info"></li>
+                    Godzina:
+                    <li id="time-info"></li>
+                    Dodatkowe uwagi:
+                    <li id="more"></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group form-group--buttons">
+              <button type="button" class="btn prev-step">Wstecz</button>
+              <button type="submit" class="btn">Potwierdzam</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+
+{% endblock %}
